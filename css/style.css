@@ -286,6 +286,17 @@ textarea.input { resize: vertical; min-height: 70px; }
 .day-section-head .mini-btn { padding: 4px 9px; }
 .day-section-head .mini-btn svg { width: 10px; height: 10px; }
 
+/* Blocos legíveis da Revisão semanal: título com contraste de verdade e
+   texto no tom principal (não o --ink-soft apagado), cada seção com fundo
+   próprio pra separar visualmente sem precisar só de linha fina. */
+.review-section { background: var(--cocoa-50); border-radius: 14px; padding: 13px 15px; margin-bottom: 12px; }
+.review-section-title { font-size: 13px; font-weight: 700; color: var(--accent-strong); margin: 0 0 8px; display: flex; align-items: center; gap: 6px; }
+.review-section-title svg { width: 15px; height: 15px; flex-shrink: 0; }
+.review-text { font-size: 14px; color: var(--ink); line-height: 1.55; margin: 0; }
+.review-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; }
+.review-row + .review-row { border-top: 1px solid var(--border); }
+.review-row .item-title { font-size: 13.5px; color: var(--ink); }
+
 .link-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 @media (min-width: 640px) { .link-grid { grid-template-columns: repeat(2, 1fr); } }
 .link-card {

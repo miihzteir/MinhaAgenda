@@ -314,33 +314,39 @@ function openWeeklyReview() {
   const close = openModal({
     title: 'Revisão semanal',
     bodyHtml: `
-      <p style="font-size:12.5px;color:var(--ink-soft);opacity:.8;margin:0 0 12px;">Um retrato gentil dos últimos 7 dias, pra reorganizar o que ainda não coube.</p>
+      <p class="review-text" style="opacity:.85;margin:0 0 14px;">Um retrato gentil dos últimos 7 dias, pra reorganizar o que ainda não coube.</p>
 
-      <div class="day-section-head"><span>Concluídas na semana</span></div>
-      <p style="font-size:13px;margin:4px 0 12px;">${completedThisWeek.length ? `Você concluiu <strong>${completedThisWeek.length}</strong> tarefa(s). Bom trabalho.` : 'Nenhuma tarefa concluída ainda essa semana — tudo bem, ainda dá tempo.'}</p>
-
-      <div class="day-section-head"><span>Ficaram pendentes</span></div>
-      <div id="stale-list" style="display:flex;flex-direction:column;gap:6px;max-height:32vh;overflow-y:auto;margin:6px 0 12px;">
-        ${stale.length ? stale.map((t) => `
-          <div class="item-row" data-row="${t.id}">
-            <div class="item-title" style="flex:1;">${escapeHtml(t.title)}</div>
-            <button type="button" class="icon-btn sm" data-stale-done="${t.id}" title="Concluir">${icons.check}</button>
-            <button type="button" class="icon-btn sm" data-stale-tomorrow="${t.id}" title="Adiar para amanhã">${icons.chevronRight}</button>
-            <button type="button" class="icon-btn sm" data-stale-someday="${t.id}" title="Mover para algum dia">${icons.sparkle}</button>
-          </div>`).join('') : `<p style="font-size:13px;color:var(--ink-soft);opacity:.8;">Esta tarefa ficou pendente? Nenhuma — está tudo em dia.</p>`}
+      <div class="review-section">
+        <div class="review-section-title">${icons.check} Concluídas na semana</div>
+        <p class="review-text">${completedThisWeek.length ? `Você concluiu <strong>${completedThisWeek.length}</strong> tarefa(s). Bom trabalho.` : 'Nenhuma tarefa concluída ainda essa semana — tudo bem, ainda dá tempo.'}</p>
       </div>
-      ${inboxCount ? `<p style="font-size:13px;margin:0 0 12px;">Ainda há <strong>${inboxCount}</strong> ${inboxCount === 1 ? 'item' : 'itens'} na caixa de entrada esperando um lugar. Quer organizar?</p>` : ''}
 
-      <div class="day-section-head"><span>Hábitos na semana</span></div>
-      <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 12px;">
+      <div class="review-section">
+        <div class="review-section-title">${icons.clock} Ficaram pendentes</div>
+        <div id="stale-list" style="max-height:32vh;overflow-y:auto;">
+          ${stale.length ? stale.map((t) => `
+            <div class="review-row" data-row="${t.id}">
+              <div class="item-title" style="flex:1;">${escapeHtml(t.title)}</div>
+              <button type="button" class="icon-btn sm" data-stale-done="${t.id}" title="Concluir">${icons.check}</button>
+              <button type="button" class="icon-btn sm" data-stale-tomorrow="${t.id}" title="Adiar para amanhã">${icons.chevronRight}</button>
+              <button type="button" class="icon-btn sm" data-stale-someday="${t.id}" title="Mover para algum dia">${icons.sparkle}</button>
+            </div>`).join('') : `<p class="review-text">Esta tarefa ficou pendente? Nenhuma — está tudo em dia.</p>`}
+        </div>
+        ${inboxCount ? `<p class="review-text" style="margin-top:8px;">Ainda há <strong>${inboxCount}</strong> ${inboxCount === 1 ? 'item' : 'itens'} na caixa de entrada esperando um lugar. Quer organizar?</p>` : ''}
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-title">${icons.flame} Hábitos na semana</div>
         ${d.habits.length ? d.habits.map((h) => {
           const s = periodStats(h, today, 7);
-          return `<div style="display:flex;justify-content:space-between;font-size:12.5px;"><span>${escapeHtml(h.name)}</span><span style="color:var(--ink-soft);">${s.done}/${s.applicable} (${s.pct}%)</span></div>`;
-        }).join('') : `<p style="font-size:13px;color:var(--ink-soft);opacity:.8;">Nenhum hábito cadastrado ainda.</p>`}
+          return `<div class="review-row"><span class="item-title" style="flex:1;">${escapeHtml(h.name)}</span><span class="review-text" style="font-weight:600;">${s.done}/${s.applicable} (${s.pct}%)</span></div>`;
+        }).join('') : `<p class="review-text">Nenhum hábito cadastrado ainda.</p>`}
       </div>
 
-      <div class="day-section-head"><span>Semana que vem</span></div>
-      <p style="font-size:13px;margin:4px 0 0;">${nextWeekEvents ? `Você tem ${nextWeekEvents} compromisso(s) marcado(s).` : 'Nenhum compromisso marcado ainda — dá pra planejar com calma.'}</p>
+      <div class="review-section" style="margin-bottom:4px;">
+        <div class="review-section-title">${icons.agenda} Semana que vem</div>
+        <p class="review-text">${nextWeekEvents ? `Você tem ${nextWeekEvents} compromisso(s) marcado(s).` : 'Nenhum compromisso marcado ainda — dá pra planejar com calma.'}</p>
+      </div>
 
       <div class="modal-footer">
         <button class="btn" id="close-review">Fechar</button>

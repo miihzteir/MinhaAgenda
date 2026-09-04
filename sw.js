@@ -1,7 +1,7 @@
 // Service worker simples: guarda o essencial em cache pra o app abrir
 // offline. Sem build, sem hash de versão automático — quando você mudar o
 // código, só suba o número do CACHE_NAME abaixo pra forçar a atualização.
-const CACHE_NAME = 'minha-agenda-v12';
+const CACHE_NAME = 'minha-agenda-v13';
 const BASE = new URL('.', self.location).href;
 
 const CORE_FILES = [
