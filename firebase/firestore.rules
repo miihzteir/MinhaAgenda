@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// Regras de segurança da Minha Agenda.
+//
+// Estrutura dos dados: cada usuária tem seus próprios documentos dentro de
+// /users/{userId}/... — uma conta NUNCA pode ler ou escrever dados de outra.
+// O banco não fica aberto para leitura ou escrita pública em nenhuma
+// circunstância.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Documento principal da usuária (perfil). Não guardamos nada sensível
+    // aqui além do que a própria pessoa preenche nas Configurações.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Preferências (tema, pomodoro, notificações etc.)
+      match /meta/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Todas as coleções de dados pessoais/acadêmicos ficam como
+      // subcoleções do próprio documento da usuária.
+      match /{collection}/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Qualquer outro caminho é negado por padrão.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
