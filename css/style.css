@@ -188,9 +188,32 @@ textarea.input { resize: vertical; min-height: 70px; }
 
 .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--toast-bg); color: var(--toast-text); padding: 10px 18px; border-radius: 999px; font-size: 13px; z-index: 200; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
 @media (min-width: 960px) { .toast { bottom: 24px; } }
+.toast.celebrate {
+  display: flex; align-items: center; gap: 7px; font-weight: 600;
+  background: linear-gradient(120deg, var(--blush-500, #cf8f7d), var(--mauve-500, #a68fa6));
+  color: #fff; box-shadow: 0 10px 26px -6px rgba(166,143,166,.55);
+  animation: celebrate-pop .45s cubic-bezier(.34,1.56,.64,1);
+}
+.toast.celebrate .celebrate-ic { display: flex; }
+.toast.celebrate .celebrate-ic svg { width: 15px; height: 15px; }
+@keyframes celebrate-pop { 0% { transform: translateX(-50%) scale(.7); opacity: 0; } 60% { transform: translateX(-50%) scale(1.06); opacity: 1; } 100% { transform: translateX(-50%) scale(1); } }
 
 .calendar-card { margin-left: auto; margin-right: auto; }
-@media (min-width: 960px) { .calendar-card { max-width: 580px; } }
+/* Layout de duas colunas no desktop: calendário maior à esquerda, detalhe do
+   dia grudado ao lado — no celular continua empilhado, sem mudar nada lá. */
+.agenda-month-layout { display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 960px) {
+  .calendar-card { max-width: 420px; }
+  .agenda-month-layout { flex-direction: row; align-items: flex-start; }
+  .agenda-month-layout .calendar-card { flex: 1 1 420px; max-width: 460px; margin: 0; }
+  .agenda-month-layout .day-detail-card { flex: 1 1 380px; min-width: 320px; position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
+}
+@media (min-width: 1200px) {
+  .agenda-month-layout .calendar-card { flex-basis: 480px; max-width: 500px; }
+}
+/* Dia único: numa tela grande, uma linha do tempo esticada até a borda
+   fica difícil de acompanhar — centraliza e limita a largura. */
+@media (min-width: 960px) { .day-view-wrap { max-width: 640px; margin: 0 auto; } }
 .week-grid {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; text-align: center;
   background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
@@ -232,7 +255,7 @@ textarea.input { resize: vertical; min-height: 70px; }
 
 .streak-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--blush-600); background: var(--blush-100); padding: 2px 8px; border-radius: 999px; }
 
-.view-toggle { display: inline-flex; background: var(--cocoa-50); border-radius: 11px; padding: 3px; gap: 2px; flex-shrink: 0; }
+.view-toggle { display: inline-flex; flex-wrap: wrap; background: var(--cocoa-50); border-radius: 11px; padding: 3px; gap: 2px; flex-shrink: 0; }
 .view-toggle button { font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; background: none; color: var(--ink-soft); cursor: pointer; }
 .view-toggle button.active { background: var(--surface); color: var(--accent-strong); box-shadow: 0 1px 4px rgba(74,51,39,.12); }
 
@@ -244,6 +267,11 @@ textarea.input { resize: vertical; min-height: 70px; }
 }
 
 .week-grid .day .dot { background: var(--cat-color, var(--sage-500)); }
+.week-grid .day .day-dots { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 3px; }
+.week-grid .day .day-dots .dot { position: static; }
+.week-grid .day .day-dots .task-dot { background: none; box-shadow: inset 0 0 0 1.3px var(--cocoa-300); }
+.week-grid .day.selected .day-dots .task-dot { box-shadow: inset 0 0 0 1.3px var(--cream); }
+
 .week-strip { display: flex; flex-direction: column; gap: 8px; }
 .week-strip-day { border-radius: 13px; border: 1px solid var(--border); overflow: hidden; }
 .week-strip-head { display: flex; align-items: center; gap: 8px; padding: 9px 13px; cursor: pointer; background: rgba(169,120,95,.05); }
@@ -252,6 +280,16 @@ textarea.input { resize: vertical; min-height: 70px; }
 .week-strip-head.today .dn { color: var(--accent-strong); }
 .week-strip-head .count { margin-left: auto; font-size: 10.5px; color: var(--ink-soft); opacity: .65; }
 .week-strip-body { padding: 4px 10px 8px; }
+
+/* Semana no desktop vira colunas lado a lado (como um calendário de
+   verdade), em vez da lista empilhada que faz sentido só no celular. */
+@media (min-width: 960px) {
+  .week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; align-items: start; }
+  .week-strip-day { display: flex; flex-direction: column; max-height: calc(100vh - 220px); }
+  .week-strip-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .week-strip-head .count { margin-left: 0; }
+  .week-strip-body { overflow-y: auto; flex: 1; }
+}
 
 .category-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: var(--cat-color, var(--sage-500)); }
 .category-select { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -296,6 +334,30 @@ textarea.input { resize: vertical; min-height: 70px; }
 .review-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; }
 .review-row + .review-row { border-top: 1px solid var(--border); }
 .review-row .item-title { font-size: 13.5px; color: var(--ink); }
+
+/* Espaços: grade de cartões com capa colorida (gradiente a partir da cor
+   do espaço) + estatísticas rápidas na tela de detalhe. */
+.space-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.space-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; cursor: pointer; box-shadow: 0 2px 10px -2px rgba(74,51,39,.08); transition: transform .15s, box-shadow .15s; }
+.space-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -4px rgba(74,51,39,.16); }
+.space-banner {
+  height: 76px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--sw-color), color-mix(in srgb, var(--sw-color) 55%, var(--bg)));
+  background-size: cover; background-position: center; color: white;
+}
+.space-banner svg { width: 30px; height: 30px; }
+.space-banner.large { height: 130px; border-radius: 18px; }
+.space-banner.large svg { width: 38px; height: 38px; }
+.space-card-body { padding: 12px 14px 14px; }
+.space-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px; }
+.space-stats-grid .stat { justify-content: center; text-align: center; }
+.space-card.reorder-active { transform: scale(1.04) rotate(-1deg); box-shadow: 0 14px 30px -8px rgba(74,51,39,.32); z-index: 5; cursor: grabbing; }
+.space-card { touch-action: none; }
+.cover-preview {
+  height: 90px; border-radius: 13px; background: var(--cocoa-50); background-size: cover; background-position: center;
+  display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 12px; opacity: .8;
+  border: 1px dashed var(--border);
+}
 
 .link-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
 @media (min-width: 640px) { .link-grid { grid-template-columns: repeat(2, 1fr); } }
