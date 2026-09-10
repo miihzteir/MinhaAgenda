@@ -12,7 +12,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const DEFAULT_DATA = {
-  profile: { name: 'Você', course: '', photoURL: null },
+  profile: { name: 'Você', photoURL: null },
   prefs: { theme: 'auto', accent: 'cocoa', statColors: { done: 'sage', pending: 'cocoa', habits: 'mauve', events: 'blush' } },
   tasks: [],
   events: [],
@@ -211,7 +211,7 @@ export const store = {
   },
 
   addCategory(c) {
-    data.categories.push({ id: uid(), name: '', color: 'cocoa', icon: 'tag', ...c });
+    data.categories.push({ id: uid(), name: '', color: 'cocoa', icon: 'tag', emoji: null, ...c });
     save();
   },
   updateCategory(id, patch) {

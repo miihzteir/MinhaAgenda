@@ -401,6 +401,8 @@ textarea.input { resize: vertical; min-height: 70px; }
 .area-ic svg { width: 14px; height: 14px; }
 .area-chip { display: inline-flex; align-items: center; gap: 4px; color: var(--sw-color); background: color-mix(in srgb, var(--sw-color) 14%, transparent); }
 .area-chip svg { width: 11px; height: 11px; }
+.cat-emoji { font-size: 14px; line-height: 1; }
+.area-chip .cat-emoji { font-size: 11px; }
 
 .now-card {
   background: linear-gradient(135deg, rgba(169,120,95,.12), rgba(207,143,125,.08));

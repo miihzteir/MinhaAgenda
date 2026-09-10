@@ -109,5 +109,16 @@ export async function signOutUser() {
   await api.authMod.signOut(api.auth);
 }
 
+// Apaga os dados na nuvem e a conta de login (Google). Se o Firebase pedir
+// login recente por segurança, propaga o erro pra tela avisar a pessoa.
+export async function deleteAccountAndData() {
+  if (!api || !api.auth.currentUser) return;
+  const user = api.auth.currentUser;
+  try {
+    await api.fsMod.deleteDoc(api.fsMod.doc(api.db, 'users', user.uid));
+  } catch { /* segue mesmo se o documento já não existir */ }
+  await api.authMod.deleteUser(user);
+}
+
 // Se já tem chaves configuradas, tenta restaurar a sessão assim que o app abre.
 if (isConfigured) ensureFirebase();

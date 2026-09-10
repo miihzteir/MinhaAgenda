@@ -36,5 +36,15 @@ export const icons = {
   tag: s('<path d="M12.5 3H5a2 2 0 0 0-2 2v7.5a2 2 0 0 0 .6 1.4l9 9a2 2 0 0 0 2.8 0l7.1-7.1a2 2 0 0 0 0-2.8l-9-9a2 2 0 0 0-1-.6Z"/><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/>'),
   layers: s('<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/>'),
   copy: s('<rect x="8" y="8" width="13" height="13" rx="2.5"/><path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8"/>'),
-  target: s('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>')
+  target: s('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>'),
+  flower: s('<circle cx="12" cy="12" r="2.3"/><circle cx="12" cy="5.5" r="2.8"/><circle cx="12" cy="18.5" r="2.8"/><circle cx="5.5" cy="12" r="2.8"/><circle cx="18.5" cy="12" r="2.8"/>'),
+  gift: s('<rect x="3" y="9.5" width="18" height="11" rx="1.5"/><path d="M3 13.5h18"/><path d="M12 9.5v11"/><path d="M8.2 9.5c-1.9 0-3.2-1.3-3.2-2.7S6.3 4 8.2 4c2.1 0 3.8 2.7 3.8 5.5"/><path d="M15.8 9.5c1.9 0 3.2-1.3 3.2-2.7S17.7 4 15.8 4c-2.1 0-3.8 2.7-3.8 5.5"/>'),
+  coffee: s('<path d="M4 9h13v5.5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9Z"/><path d="M17 10.5h1.8a2.5 2.5 0 0 1 0 5H17"/><path d="M7.2 3.3c.4 1-.3 1.5-.7 2.2-.3.7 0 1.3.7 1.8M11.2 3.3c.4 1-.3 1.5-.7 2.2-.3.7 0 1.3.7 1.8"/>'),
+  briefcase: s('<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8 7.5V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/>'),
+  money: s('<rect x="2.5" y="6.5" width="19" height="11" rx="2.2"/><circle cx="12" cy="12" r="3"/><path d="M6 9.2v0M18 14.8v0"/>'),
+  music: s('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.6"/><circle cx="17.5" cy="16" r="2.6"/>'),
+  palette: s('<path d="M12 3a9 9 0 1 0 0 18c1 0 1.9-.8 1.9-1.9 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .9-1.9 1.9-1.9H17a4 4 0 0 0 4-4c0-4.4-4-7.8-9-7.8Z"/><circle cx="7.3" cy="10.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="7.3" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.7" cy="10.5" r="1.1" fill="currentColor" stroke="none"/>'),
+  leaf: s('<path d="M20 4C10 4 4 10 4 18c0 1.1.9 2 2 2 8 0 14-6 14-16Z"/><path d="M6.5 17.5C9 15 12.5 11.5 17.5 6.5"/>'),
+  paw: s('<circle cx="12" cy="16.2" r="3.3"/><circle cx="5.8" cy="9.2" r="1.9"/><circle cx="10" cy="6" r="1.9"/><circle cx="14" cy="6" r="1.9"/><circle cx="18.2" cy="9.2" r="1.9"/>'),
+  plane: s('<path d="M21 3 3 10.3l6.8 2.4"/><path d="M21 3l-8 18-2.2-7.3"/><path d="M9.8 12.7 21 3"/>')
 };

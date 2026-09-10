@@ -1,11 +1,12 @@
 import { store } from '../store.js';
 import { icons } from '../icons.js';
 import { openModal, toast } from '../modal.js';
-import { authState, signInWithGoogle, signOutUser } from '../firebase.js';
+import { authState, signInWithGoogle, signOutUser, deleteAccountAndData } from '../firebase.js';
 import { colorValue, colorSwatchesHtml, wireColorSwatches } from '../colors.js';
 import { escapeHtml } from './home.js';
+import { categoryIconHtml } from '../categories.js';
 
-const CATEGORY_ICONS = ['book', 'layers', 'heart', 'tag', 'star', 'sparkle', 'droplet', 'home'];
+const CATEGORY_ICONS = ['book', 'layers', 'heart', 'tag', 'star', 'sparkle', 'droplet', 'home', 'flower', 'gift', 'coffee', 'briefcase', 'money', 'music', 'palette', 'leaf', 'paw', 'plane'];
 
 const STAT_COLOR_FIELDS = [
   { key: 'done', label: 'Concluídas' },
@@ -53,7 +54,6 @@ function draw(page) {
       <div class="card-head"><span class="card-title">Perfil</span><span class="card-sub">Como a Minha Agenda te chama</span></div>
       <div class="card-body">
         <div class="field"><label>Nome</label><input class="input" id="f-name" value="${escAttr(d.profile.name)}" /></div>
-        <div class="field"><label>Curso</label><input class="input" id="f-course" value="${escAttr(d.profile.course)}" /></div>
         <button class="btn" id="save-profile">Salvar perfil</button>
       </div>
     </div>
@@ -107,7 +107,7 @@ function draw(page) {
         <p style="font-size:11.5px;color:var(--ink-soft);opacity:.75;margin:0 0 10px;">Usadas em eventos, tarefas, hábitos, metas e espaços — cada uma com uma cor padrão que pode ser trocada em cada item.</p>
         ${d.categories.map((c) => `
           <div class="item-row">
-            <span class="area-ic" style="--sw-color:${colorValue(c.color)};">${icons[c.icon] || icons.tag}</span>
+            <span class="area-ic" style="--sw-color:${colorValue(c.color)};">${categoryIconHtml(c)}</span>
             <div class="item-title" style="flex:1;">${escapeHtml(c.name)}</div>
             <div class="row-actions">
               <button class="icon-btn sm" data-cat-edit="${c.id}">${icons.edit}</button>
@@ -129,13 +129,16 @@ function draw(page) {
       <div class="card-head"><span class="card-title">Privacidade</span></div>
       <div class="card-body" style="font-size:12.5px;color:var(--ink-soft);">
         <p style="margin:0 0 6px;">${authState.user ? 'Seus dados ficam na sua conta, e sincronizados neste e em outros aparelhos.' : 'Seus dados ficam só neste navegador, neste aparelho.'} Sem rastreamento, sem publicidade.</p>
-        <button class="btn danger" id="wipe" style="margin-top:6px;">${icons.trash} Excluir todos os dados</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+          <button class="btn danger" id="wipe">${icons.trash} Excluir todos os dados</button>
+          ${authState.user ? `<button class="btn danger" id="delete-account">${icons.trash} Excluir conta</button>` : ''}
+        </div>
       </div>
     </div>
   `;
 
   page.querySelector('#save-profile').addEventListener('click', () => {
-    store.updateProfile({ name: page.querySelector('#f-name').value.trim() || 'Você', course: page.querySelector('#f-course').value.trim() });
+    store.updateProfile({ name: page.querySelector('#f-name').value.trim() || 'Você' });
     toast('Perfil atualizado.');
   });
   page.querySelector('#install')?.addEventListener('click', async () => {
@@ -192,6 +195,16 @@ function draw(page) {
     if (confirm('Excluir todos os seus dados? Não é possível desfazer.')) {
       store.wipeAll();
       toast('Todos os dados foram excluídos.');
+    }
+  });
+  page.querySelector('#delete-account')?.addEventListener('click', async () => {
+    if (!confirm('Excluir sua conta e todos os dados na nuvem? Não é possível desfazer.')) return;
+    try {
+      await deleteAccountAndData();
+      store.wipeAll();
+      toast('Conta excluída.');
+    } catch {
+      toast('Não foi possível excluir agora — saia e entre de novo com Google, e tente outra vez.');
     }
   });
 
@@ -254,8 +267,13 @@ function openCategoryModal(existing) {
       <div class="field"><label>Cor</label>${colorSwatchesHtml(existing?.color || 'cocoa')}</div>
       <div class="field"><label>Ícone</label>
         <div class="icon-select" id="f-icon">
-          ${CATEGORY_ICONS.map((ic) => `<button type="button" class="icon-opt" data-icon="${ic}" aria-pressed="${(existing?.icon || 'tag') === ic}">${icons[ic]}</button>`).join('')}
+          ${CATEGORY_ICONS.map((ic) => `<button type="button" class="icon-opt" data-icon="${ic}" aria-pressed="${!existing?.emoji && (existing?.icon || 'tag') === ic}">${icons[ic]}</button>`).join('')}
         </div>
+      </div>
+      <div class="field">
+        <label>Ou emoji personalizado (opcional)</label>
+        <input class="input" id="f-emoji" maxlength="4" placeholder="Ex.: 🌱" style="max-width:90px;font-size:18px;text-align:center;" value="${existing?.emoji ? escapeHtml(existing.emoji) : ''}" />
+        <p style="font-size:11px;color:var(--ink-soft);opacity:.75;margin:4px 0 0;">Se escolher um emoji, ele substitui o ícone acima.</p>
       </div>
       <div class="modal-footer">
         <button class="btn ghost" id="cancel">Cancelar</button>
@@ -269,14 +287,16 @@ function openCategoryModal(existing) {
       body.querySelectorAll('[data-icon]').forEach((b) => b.addEventListener('click', () => {
         icon = b.dataset.icon;
         body.querySelectorAll('[data-icon]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.icon === icon));
+        body.querySelector('#f-emoji').value = '';
       }));
       body.querySelector('#f-name').focus();
       body.querySelector('#cancel').addEventListener('click', close);
       body.querySelector('#save').addEventListener('click', () => {
         const name = body.querySelector('#f-name').value.trim();
         if (!name) return;
-        if (existing) store.updateCategory(existing.id, { name, color, icon });
-        else store.addCategory({ name, color, icon });
+        const emoji = body.querySelector('#f-emoji').value.trim() || null;
+        if (existing) store.updateCategory(existing.id, { name, color, icon, emoji });
+        else store.addCategory({ name, color, icon, emoji });
         toast(existing ? 'Categoria atualizada.' : 'Categoria criada.');
         close();
       });

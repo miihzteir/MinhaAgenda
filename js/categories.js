@@ -25,12 +25,19 @@ export function catColor(catId) {
   return colorValue(catOf(catId).color);
 }
 
+// Cada categoria mostra um emoji personalizado (se a pessoa escolheu um) ou
+// um dos ícones prontos — nunca os dois juntos.
+export function categoryIconHtml(c) {
+  if (c.emoji) return `<span class="cat-emoji" aria-hidden="true">${esc(c.emoji)}</span>`;
+  return icons[c.icon] || icons.tag;
+}
+
 export function categoryChipHtml(catId) {
   if (!catId) return '';
   const cats = getCategories();
   const c = cats.find((x) => x.id === catId);
   if (!c) return '';
-  return `<span class="chip area-chip" style="--sw-color:${colorValue(c.color)};">${icons[c.icon] || icons.tag}${esc(c.name)}</span>`;
+  return `<span class="chip area-chip" style="--sw-color:${colorValue(c.color)};">${categoryIconHtml(c)}${esc(c.name)}</span>`;
 }
 
 export function categorySelectHtml(selectedId, id = 'f-category') {
