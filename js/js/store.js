@@ -103,7 +103,7 @@ export const store = {
   },
 
   addArea(a) {
-    data.areas.push({ id: uid(), name: '', color: 'cocoa', icon: 'star', coverImage: null, categoryId: null, ...a });
+    data.areas.push({ id: uid(), name: '', description: '', color: 'cocoa', icon: 'star', coverImage: null, categoryId: null, ...a });
     save();
   },
   updateArea(id, patch) {

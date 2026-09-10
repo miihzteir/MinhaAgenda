@@ -6,7 +6,7 @@ import { store } from '../store.js';
 import { icons } from '../icons.js';
 import { openModal, toast } from '../modal.js';
 import { escapeHtml } from './home.js';
-import { colorValue, colorSwatchesHtml, wireColorSwatches } from '../colors.js';
+import { colorValue } from '../colors.js';
 import { openTaskModal } from './tasks.js';
 import { openNoteModal } from './notes.js';
 import { openGoalModal, goalRowHtml, wireGoalRows } from './goals.js';
@@ -159,6 +159,7 @@ function drawDetail(page, d, a) {
         <button class="icon-btn sm" id="del-space">${icons.trash}</button>
       </div>
     </div>
+    ${a.description ? `<p style="font-size:13px;color:var(--ink-soft);opacity:.85;margin:-6px 0 10px;">${escapeHtml(a.description)}</p>` : ''}
     ${a.categoryId ? `<div style="margin:-4px 0 10px;">${categoryChipHtml(a.categoryId)}</div>` : ''}
     <div class="space-stats-grid">
       <div class="stat"><div><div class="stat-num">${s.tasks}</div><div class="stat-label">tarefas</div></div></div>
@@ -240,8 +241,10 @@ export function openAreaModal(existing) {
     title: existing ? 'Editar espaço' : 'Novo espaço',
     bodyHtml: `
       <div class="field"><label>Nome</label><input class="input" id="f-name" placeholder="Ex.: Trabalho" value="${existing ? escapeHtml(existing.name) : ''}" /></div>
-      <div class="field"><label>Categoria (opcional)</label>${categorySelectHtml(existing?.categoryId)}</div>
-      <div class="field"><label>Cor</label><div id="f-color-wrap">${colorSwatchesHtml(existing?.color || 'cocoa')}</div></div>
+      <div class="field"><label>Descrição (opcional)</label><textarea class="input" id="f-desc" rows="2" placeholder="Uma frase sobre esse espaço">${existing ? escapeHtml(existing.description || '') : ''}</textarea></div>
+      <div class="field"><label>Categoria (opcional)</label>${categorySelectHtml(existing?.categoryId)}
+        <p style="font-size:11px;color:var(--ink-soft);opacity:.7;margin:4px 0 0;">A cor do espaço segue a da categoria escolhida.</p>
+      </div>
       <div class="field"><label>Ícone</label>
         <div class="icon-select" id="f-icon">
           ${AREA_ICONS.map((ic) => `<button type="button" class="icon-opt" data-icon="${ic}" aria-pressed="${(existing?.icon || 'star') === ic}">${icons[ic]}</button>`).join('')}
@@ -262,17 +265,8 @@ export function openAreaModal(existing) {
       </div>
     `,
     onMount: (body, close) => {
-      let color = existing?.color || 'cocoa';
       let icon = existing?.icon || 'star';
       let coverImage = existing?.coverImage || null;
-      const colorWrap = body.querySelector('#f-color-wrap');
-      wireColorSwatches(colorWrap, (c) => { color = c; });
-      body.querySelector('#f-category').addEventListener('change', (e) => {
-        if (!e.target.value) return;
-        color = catOf(e.target.value).color;
-        colorWrap.innerHTML = colorSwatchesHtml(color);
-        wireColorSwatches(colorWrap, (c) => { color = c; });
-      });
       body.querySelectorAll('[data-icon]').forEach((b) => b.addEventListener('click', () => {
         icon = b.dataset.icon;
         body.querySelectorAll('[data-icon]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.icon === icon));
@@ -305,9 +299,11 @@ export function openAreaModal(existing) {
       body.querySelector('#save').addEventListener('click', () => {
         const name = body.querySelector('#f-name').value.trim();
         if (!name) return;
+        const description = body.querySelector('#f-desc').value.trim();
         const categoryId = body.querySelector('#f-category').value || null;
-        if (existing) store.updateArea(existing.id, { name, color, icon, coverImage, categoryId });
-        else store.addArea({ name, color, icon, coverImage, categoryId });
+        const color = categoryId ? catOf(categoryId).color : 'cocoa';
+        if (existing) store.updateArea(existing.id, { name, description, color, icon, coverImage, categoryId });
+        else store.addArea({ name, description, color, icon, coverImage, categoryId });
         toast(existing ? 'Espaço atualizado.' : 'Espaço criado.');
         close();
       });
