@@ -121,10 +121,14 @@ function shell() {
         <main class="main" id="page"></main>
       </div>
       <nav class="bottom-nav">
-        ${MOBILE_PRIMARY.slice(0, 2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
+        <div class="bottom-nav-side">
+          ${MOBILE_PRIMARY.slice(0, 2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
+        </div>
         <button class="fab" id="btn-fab" aria-label="Adicionar">${icons.plus}</button>
-        ${MOBILE_PRIMARY.slice(2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
-        <a href="#/mais" class="nav-item ${route === '#/mais' ? 'active' : ''}">${icons.moreH}<span>Mais</span></a>
+        <div class="bottom-nav-side">
+          ${MOBILE_PRIMARY.slice(2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
+          <a href="#/mais" class="nav-item ${route === '#/mais' ? 'active' : ''}">${icons.moreH}<span>Mais</span></a>
+        </div>
       </nav>
     </div>
   `;
