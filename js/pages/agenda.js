@@ -210,7 +210,7 @@ function drawDay(body, d, today) {
   wireDaySections(body, d);
 }
 
-const TIMELINE_HOURS = [...Array(18)].map((_, i) => i + 6); // 06:00 – 23:00
+const TIMELINE_HOURS = [...Array(24)].map((_, i) => i); // 00:00 – 23:00, o dia todo
 
 function dayTimelineHtml(dateISO, d) {
   const dayEvents = d.events.filter((e) => occursOn(e, dateISO)).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
@@ -491,6 +491,14 @@ function eventRowHtml(e, d) {
     </div>`;
 }
 
+// Acha outros eventos que já ocorrem no mesmo dia e no mesmo horário (usado
+// pra avisar antes de salvar um evento em cima de outro, sem impedir —
+// algumas pessoas fazem isso de propósito, como um compromisso "reserva").
+function findTimeConflicts(dateISO, time, excludeId) {
+  if (!time) return [];
+  return store.get().events.filter((e) => e.id !== excludeId && e.time === time && occursOn(e, dateISO));
+}
+
 export function openEventModal(existing, defaultDate) {
   openModal({
     title: existing ? 'Editar evento' : 'Novo evento',
@@ -557,12 +565,19 @@ export function openEventModal(existing, defaultDate) {
         const title = body.querySelector('#f-title').value.trim();
         const date = body.querySelector('#f-date').value;
         if (!title || !date) return;
+        const time = body.querySelector('#f-time').value || null;
+        const conflicts = findTimeConflicts(date, time, existing?.id);
+        if (conflicts.length) {
+          const names = conflicts.map((c) => `"${c.title}"`).join(', ');
+          const ok = confirm(`Já tem ${names} marcado às ${time} nesse dia. Quer salvar mesmo assim?`);
+          if (!ok) return;
+        }
         const repeat = body.querySelector('#f-repeat').value;
         const payload = {
           title,
           date,
           description: body.querySelector('#f-desc').value.trim(),
-          time: body.querySelector('#f-time').value || null,
+          time,
           endTime: body.querySelector('#f-endtime').value || null,
           location: body.querySelector('#f-location').value.trim() || null,
           areaId: body.querySelector('#f-area')?.value || null,
