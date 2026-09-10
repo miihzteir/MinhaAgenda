@@ -26,7 +26,7 @@ const NAV = [
   { to: '#/metas', label: 'Metas', icon: 'target', page: renderGoals },
   { to: '#/configuracoes', label: 'Configurações', icon: 'settings', page: renderSettings }
 ];
-const MOBILE_PRIMARY = ['#/', '#/agenda', '#/tarefas', '#/areas'];
+const MOBILE_PRIMARY = ['#/', '#/agenda', '#/tarefas'];
 
 // Frases que mudam por dia (mesma frase o dia todo, muda à meia-noite).
 const DAILY_QUOTES = [
@@ -121,14 +121,10 @@ function shell() {
         <main class="main" id="page"></main>
       </div>
       <nav class="bottom-nav">
-        <div class="bottom-nav-side">
-          ${MOBILE_PRIMARY.slice(0, 2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
-        </div>
+        ${MOBILE_PRIMARY.slice(0, 2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
         <button class="fab" id="btn-fab" aria-label="Adicionar">${icons.plus}</button>
-        <div class="bottom-nav-side">
-          ${MOBILE_PRIMARY.slice(2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
-          <a href="#/mais" class="nav-item ${route === '#/mais' ? 'active' : ''}">${icons.moreH}<span>Mais</span></a>
-        </div>
+        ${MOBILE_PRIMARY.slice(2).map((to) => navItemHtml(NAV.find((n) => n.to === to), to === active.to)).join('')}
+        <a href="#/mais" class="nav-item ${route === '#/mais' ? 'active' : ''}">${icons.moreH}<span>Mais</span></a>
       </nav>
     </div>
   `;
@@ -174,3 +170,23 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
+
+// Animação de toque: usa uma classe (.pressed) em vez de só :active, porque
+// no celular o :active sozinho costuma falhar ou nem aparecer. Delegado no
+// document pra funcionar em qualquer botão/aba, mesmo os que a tela redesenha.
+const PRESSABLE = 'button, a.nav-item, .nav-item, .icon-opt, .theme-opt, .category-opt, .accent-swatch, .checkbox, .space-card, .week-grid .day, .icon-btn, .mini-btn';
+let pressTimer = null;
+function press(e) {
+  const el = e.target.closest(PRESSABLE);
+  if (!el || el.disabled) return;
+  el.classList.add('pressed');
+  clearTimeout(pressTimer);
+  pressTimer = setTimeout(() => el.classList.remove('pressed'), 400);
+}
+function release() {
+  document.querySelectorAll('.pressed').forEach((el) => el.classList.remove('pressed'));
+}
+document.addEventListener('pointerdown', press);
+document.addEventListener('pointerup', release);
+document.addEventListener('pointercancel', release);
+document.addEventListener('pointerleave', release, true);

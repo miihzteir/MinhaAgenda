@@ -37,25 +37,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline: 2px solid var(--accent); outline-offset: 2px;
 }
 
-/* Feedback leve ao tocar/clicar — rápido e sutil, sem travar nem exagerar. */
+/* Feedback leve ao tocar/clicar — rápido e sutil, sem travar nem exagerar.
+   Usa a classe .pressed (aplicada via JS em app.js) em vez de só :active,
+   porque :active sozinho é inconsistente em toque no celular. */
 button, a.nav-item, .nav-item, .icon-opt, .theme-opt, .category-opt, .accent-swatch,
-.checkbox, .space-card, .week-grid .day, .icon-btn, .mini-btn, .item-row, .task-row {
-  transition: transform .1s ease-out, background .15s, box-shadow .15s;
+.checkbox, .space-card, .week-grid .day, .icon-btn, .mini-btn {
+  transition: transform .12s ease-out;
 }
-button:active, a.nav-item:active, .nav-item:active, .icon-opt:active, .theme-opt:active,
-.category-opt:active, .accent-swatch:active, .checkbox:active, .icon-btn:active, .mini-btn:active {
-  transform: scale(.93);
+button.pressed, a.nav-item.pressed, .nav-item.pressed, .icon-opt.pressed, .theme-opt.pressed,
+.category-opt.pressed, .accent-swatch.pressed, .checkbox.pressed, .icon-btn.pressed, .mini-btn.pressed {
+  transform: scale(.9);
 }
-.space-card:active:not(.reorder-active), .week-grid .day:active:not([disabled]) {
-  transform: scale(.97);
+.space-card.pressed:not(.reorder-active), .week-grid .day.pressed {
+  transform: scale(.96);
 }
-.fab:active { transform: scale(.9); }
+.fab.pressed { transform: scale(.88); }
 @media (prefers-reduced-motion: reduce) {
   button, a.nav-item, .nav-item, .icon-opt, .theme-opt, .category-opt, .accent-swatch,
   .checkbox, .space-card, .week-grid .day, .icon-btn, .mini-btn, .fab { transition: none !important; }
-  button:active, a.nav-item:active, .nav-item:active, .icon-opt:active, .theme-opt:active,
-  .category-opt:active, .accent-swatch:active, .checkbox:active, .icon-btn:active, .mini-btn:active,
-  .space-card:active, .week-grid .day:active, .fab:active { transform: none !important; }
+  .pressed { transform: none !important; }
 }
 
 .app-shell { display: flex; min-height: 100vh; }
@@ -156,13 +156,10 @@ button:active, a.nav-item:active, .nav-item:active, .icon-opt:active, .theme-opt
 
 /* Bottom nav (mobile) */
 .bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center; justify-content: space-around;
   background: rgba(250,246,241,.97); border-top: 1px solid var(--border); padding: 6px 8px calc(8px + env(safe-area-inset-bottom));
   backdrop-filter: blur(6px);
 }
-/* Dois grupos de largura igual, um de cada lado do botão + — assim ele fica
-   sempre exatamente no centro, não importa quantos itens tem em cada lado. */
-.bottom-nav-side { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-around; }
 [data-theme="dark"] .bottom-nav { background: rgba(36,28,23,.97); }
 .bottom-nav .nav-item { flex-direction: column; gap: 2px; font-size: 10.5px; padding: 6px 8px; min-width: 54px; width: auto; align-items: center; background: none !important; }
 .bottom-nav .nav-item.active { color: var(--accent-strong); }
